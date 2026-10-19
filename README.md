@@ -24,7 +24,7 @@ Swagger UI is served at `/api`.
 | POST | `/auth/login` | public | Log in. Sets the JWT in an HttpOnly `Authentication` cookie |
 | GET | `/users/me` | user | Current user |
 | POST | `/products` | admin | Create a product |
-| POST | `/products/{id}/image` | owner/admin | Upload a JPEG, PNG or WebP product photo (max 2 MB) |
+| POST | `/products/{id}/image` | owner | Upload a JPEG, PNG or WebP product photo (max 2 MB) |
 | GET | `/products?status=available` | user | List products (`available` = unsold only) |
 | GET | `/products/{id}` | user | Product detail |
 | POST | `/checkout/session` | user | Create a Stripe Checkout session |
@@ -46,7 +46,7 @@ Errors use the shape `{ "statusCode": 400, "message": "..." | ["..."], "error": 
   - Fulfilment is idempotent. It checks for an existing order, and a UNIQUE `orders.product_id` constraint catches concurrent duplicate deliveries.
 - **Uploads.**
   - The image type is detected from the file's leading bytes, not the client's Content-Type.
-  - Only the product's owner (or an admin) can upload.
+  - Only the product's owner can upload.
   - The image URL is stored on the product, so listing products is a single query.
   - Storage goes through the S3 API, so AWS S3 or any S3-compatible store (Supabase Storage, Cloudflare R2) works by configuration alone.
 - **Money.** Prices are stored as `NUMERIC(10,2)` and converted to Stripe's smallest currency unit (paise) with explicit rounding. The charge currency is INR (`STRIPE_CURRENCY`), the same currency the storefront displays.
@@ -70,6 +70,23 @@ To test Stripe webhooks locally:
 stripe listen --forward-to localhost:3001/checkout/webhook
 # copy the printed whsec_... into STRIPE_WEBHOOK_SECRET
 ```
+
+## Tests
+
+```bash
+mvn test      # unit tests: JUnit 5 + Mockito, no database needed
+mvn verify    # also integration tests against a real PostgreSQL (Testcontainers, needs Docker)
+              # and a coverage report at target/site/jacoco/index.html
+```
+
+- **Unit tests** cover the rules that matter most:
+  - webhook signature verification and idempotency (a retried delivery creates no second order)
+  - owner-only image uploads, and file type and size checks
+  - signup role handling, and JWT expiry and tampering
+- **Integration tests** (`*IT`) boot the whole app, including Flyway, JPA, Spring Security and JSON, and exercise it over HTTP: signup → login cookie → role-protected routes.
+- **CI:** GitHub Actions runs `mvn verify` on every push and pull request (`.github/workflows/ci.yml`).
+
+## Run in Docker
 
 Or run it in Docker:
 

@@ -3,7 +3,6 @@ package com.shoppy.products;
 import com.shoppy.auth.AuthUser;
 import com.shoppy.common.ApiException;
 import com.shoppy.storage.S3Service;
-import com.shoppy.users.Role;
 import com.shoppy.users.UserRepository;
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -62,11 +61,13 @@ public class ProductService {
                 .orElseThrow(() -> ApiException.notFound("Product not found for id " + productId));
     }
 
-    /** Only the seller (or an admin) may set a product's image. */
+    /**
+     * Only the product's seller may set its image. ADMIN is the seller role and anyone can pick it
+     * at signup, so being ADMIN alone must not allow editing another seller's products.
+     */
     public String uploadImage(Long productId, MultipartFile file, AuthUser caller) {
         Product product = find(productId);
-        boolean isOwner = product.getUser().getId().equals(caller.id());
-        if (!isOwner && caller.role() != Role.ADMIN) {
+        if (!product.getUser().getId().equals(caller.id())) {
             throw ApiException.forbidden("You can only upload images for your own products");
         }
         if (file == null || file.isEmpty()) {

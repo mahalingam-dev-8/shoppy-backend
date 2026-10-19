@@ -1,0 +1,20 @@
+# Profile for integration tests. The datasource is replaced by the Testcontainers PostgreSQL
+# (@ServiceConnection); the values here only satisfy the placeholders in application.yml.
+spring:
+  datasource:
+    url: jdbc:postgresql://replaced-by-testcontainers/shoppy
+    username: test
+    password: test
+
+app:
+  jwt:
+    secret: integration-test-secret-at-least-32-chars
+    expiration: 1h
+  stripe:
+    secret-key: sk_test_dummy
+    webhook-secret: whsec_test_dummy
+  aws:
+    region: us-east-1
+    s3-bucket: test-bucket
+    access-key-id: test
+    secret-access-key: test
