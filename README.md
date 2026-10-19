@@ -5,6 +5,10 @@ REST API for **Shoppy**, a full-stack e-commerce marketplace. Sellers list produ
 - **Frontend:** Next.js 14, [shopping-frontend](https://github.com/mahalingam-dev-8/shopping-frontend)
 - **Live demo:** https://shopping-frontend-ebon.vercel.app
 
+## Demo
+
+▶ [Watch the full flow (≈90 s)](https://www.loom.com/share/9613a8520bd04a83b266ff9ff50295b4): a seller lists a product, a buyer sees it appear live over WebSockets, pays with Stripe, and the webhook creates the order shown in the buyer's orders and the seller's sales.
+
 ## Stack
 
 Java 21 · Spring Boot 3.3 · Spring Security · Spring Data JPA · PostgreSQL · Flyway · JWT (jjwt) · Stripe · S3-compatible storage · WebSocket (STOMP) · Docker · springdoc OpenAPI
