@@ -82,5 +82,4 @@ The backend ships as a Docker image (multi-stage `Dockerfile`) and runs on any c
 - **Small instances:** the container is tuned for 512 MB (`JAVA_OPTS` in the Dockerfile).
 - **Database:** any PostgreSQL. Flyway migrates it on startup.
 - **Storage:** uses the S3 API, so it works with AWS S3 or any S3-compatible store by changing `S3_ENDPOINT` and `S3_PUBLIC_URL_BASE` only.
-
-The project was originally deployed on **AWS**: Elastic Beanstalk behind an Application Load Balancer, RDS PostgreSQL, S3 + CloudFront for images, and CodePipeline → CodeBuild (`buildspec.yml`, `Procfile`).
+- **AWS Elastic Beanstalk:** `buildspec.yml` (CodeBuild) and `Procfile` package and run the jar.
