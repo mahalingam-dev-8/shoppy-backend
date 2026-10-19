@@ -1,0 +1,15 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      java: corretto21
+  build:
+    commands:
+      - mvn -B -DskipTests package
+
+artifacts:
+  files:
+    - target/shoppy-backend.jar
+    - Procfile
+  discard-paths: yes

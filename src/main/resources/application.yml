@@ -1,0 +1,61 @@
+spring:
+  application:
+    name: shoppy-backend
+  # Local development: values in ./.env (KEY=VALUE, no quotes) are loaded as properties.
+  # In production (Elastic Beanstalk) set the same names as environment variables instead.
+  config:
+    import: optional:file:.env[.properties]
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    hikari:
+      # Small pool: free Postgres tiers (Neon) limit connections, and one instance needs few.
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+  jpa:
+    open-in-view: false
+    hibernate:
+      # Flyway (db/migration) owns the schema; Hibernate never creates or alters tables.
+      ddl-auto: none
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      max-file-size: 2MB
+      max-request-size: 3MB
+
+server:
+  port: ${PORT:3001}
+
+app:
+  jwt:
+    # HS256 needs a secret of at least 32 characters.
+    secret: ${JWT_SECRET}
+    # Same format as the NestJS version: 1d, 12h, 30m, 45s (or ISO-8601 such as PT1H).
+    expiration: ${JWT_EXPIRATION:1d}
+  cors:
+    allowed-origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3002,https://shopping-frontend-ebon.vercel.app}
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY}
+    webhook-secret: ${STRIPE_WEBHOOK_SECRET}
+    # Must match the currency the storefront displays (₹).
+    currency: ${STRIPE_CURRENCY:inr}
+  aws:
+    region: ${AWS_REGION:us-east-1}
+    s3-bucket: ${AWS_S3_BUCKET}
+    # Leave both empty on AWS to use the instance role instead of static keys.
+    access-key-id: ${AWS_ACCESS_KEY_ID:}
+    secret-access-key: ${AWS_SECRET_ACCESS_KEY:}
+    # S3-compatible storage (Supabase, R2, MinIO). Both empty = AWS S3.
+    endpoint: ${S3_ENDPOINT:}
+    # Base of public image URLs; empty = https://<bucket>.s3.amazonaws.com
+    public-url-base: ${S3_PUBLIC_URL_BASE:}
+
+springdoc:
+  swagger-ui:
+    path: /api
+
+# Also written to a file, so full errors can be read after the terminal scrolls past them.
+logging:
+  file:
+    name: logs/shoppy.log
