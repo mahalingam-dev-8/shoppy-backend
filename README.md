@@ -76,16 +76,11 @@ docker run --env-file .env -p 8080:8080 shoppy-backend
 
 ## Deployment
 
-| Part | Service |
-|---|---|
-| Frontend | Vercel |
-| Backend | Render (Docker, from this repo's `Dockerfile`) |
-| Database | Neon PostgreSQL |
-| Product images | Supabase Storage via its S3-compatible API (`S3_ENDPOINT`, `S3_PUBLIC_URL_BASE`) |
+The backend ships as a Docker image (multi-stage `Dockerfile`) and runs on any container platform. Everything is configured through the environment variables in `.env.example`.
 
-- Render builds and deploys the `Dockerfile` on every push to `main`, and sets `PORT`.
-- The container is tuned for a 512 MB instance (`JAVA_OPTS` in the Dockerfile).
-- Flyway migrates the database on startup.
-- Storage uses the S3 API, so it runs on AWS S3 or any S3-compatible store by changing `S3_ENDPOINT` and `S3_PUBLIC_URL_BASE` only.
+- **Port:** the app listens on `PORT`, as set by the platform.
+- **Small instances:** the container is tuned for 512 MB (`JAVA_OPTS` in the Dockerfile).
+- **Database:** any PostgreSQL. Flyway migrates it on startup.
+- **Storage:** uses the S3 API, so it works with AWS S3 or any S3-compatible store by changing `S3_ENDPOINT` and `S3_PUBLIC_URL_BASE` only.
 
 The project was originally deployed on **AWS**: Elastic Beanstalk behind an Application Load Balancer, RDS PostgreSQL, S3 + CloudFront for images, and CodePipeline → CodeBuild (`buildspec.yml`, `Procfile`).
