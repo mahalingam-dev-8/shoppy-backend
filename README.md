@@ -76,8 +76,6 @@ docker run --env-file .env -p 8080:8080 shoppy-backend
 
 ## Deployment
 
-**Current (free tier):**
-
 | Part | Service |
 |---|---|
 | Frontend | Vercel |
@@ -85,14 +83,9 @@ docker run --env-file .env -p 8080:8080 shoppy-backend
 | Database | Neon PostgreSQL |
 | Product images | Supabase Storage via its S3-compatible API (`S3_ENDPOINT`, `S3_PUBLIC_URL_BASE`) |
 
-- Render sets `PORT`.
+- Render builds and deploys the `Dockerfile` on every push to `main`, and sets `PORT`.
 - The container is tuned for a 512 MB instance (`JAVA_OPTS` in the Dockerfile).
-- Flyway migrates Neon on startup.
+- Flyway migrates the database on startup.
+- Storage uses the S3 API, so it runs on AWS S3 or any S3-compatible store by changing `S3_ENDPOINT` and `S3_PUBLIC_URL_BASE` only.
 
-**Previous (AWS):** the first version ran on AWS:
-- Elastic Beanstalk behind an Application Load Balancer
-- RDS PostgreSQL
-- S3 + CloudFront for images
-- deploys through CodePipeline → CodeBuild (`buildspec.yml`, `Procfile`)
-
-When the free tier ended, the always-on load balancer and RDS instance cost about ₹9,000/month for a demo with little traffic. Compute and database moved to free tiers. The code is unchanged, and storage can point back at AWS S3 by clearing `S3_ENDPOINT`.
+The project was originally deployed on **AWS**: Elastic Beanstalk behind an Application Load Balancer, RDS PostgreSQL, S3 + CloudFront for images, and CodePipeline → CodeBuild (`buildspec.yml`, `Procfile`).
