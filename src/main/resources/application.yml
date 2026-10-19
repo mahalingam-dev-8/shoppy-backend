@@ -12,6 +12,11 @@ spring:
     hikari:
       # Small pool: free Postgres tiers (Neon) limit connections, and one instance needs few.
       maximum-pool-size: ${DB_POOL_SIZE:5}
+      # Serverless Postgres (Neon) suspends after ~5 idle minutes and closes open connections.
+      # Retiring connections before that (and keeping none idle) avoids handing out dead ones.
+      minimum-idle: 0
+      idle-timeout: 120000
+      max-lifetime: 240000
   jpa:
     open-in-view: false
     hibernate:
